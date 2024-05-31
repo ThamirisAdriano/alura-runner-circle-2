@@ -4,7 +4,6 @@ import { Layout, StyledButton } from './styles';
 export function Publicar() {
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    // Lógica para enviar os dados do formulário
   };
 
   return (
