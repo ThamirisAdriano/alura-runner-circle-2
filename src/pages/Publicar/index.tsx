@@ -97,6 +97,10 @@ export function Publicar() {
           },
         });
       }
+      // Invalida o cache
+      cache.evict({ fieldName: 'mockActivities' });
+      cache.gc();
+      
     },
     onError: (err) => {
       console.error('Mutation error:', err);
