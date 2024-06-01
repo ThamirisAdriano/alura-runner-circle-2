@@ -24,7 +24,7 @@ export function FeedGeral() {
   const [user, setUser] = useState('');
   const { data, loading, error } = useQuery(GET_ACTIVITIES_BY_USER, {
     variables: { user },
-    skip: !user, // Pula a consulta se o usuário não estiver definido
+    //skip: !user, // Pula a consulta se o usuário não estiver definido
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
