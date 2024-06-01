@@ -100,6 +100,7 @@ export function Publicar() {
     },
     onError: (err) => {
       console.error('Mutation error:', err);
+      setErrors({ form: 'Erro ao enviar os dados. Tente novamente mais tarde.' });
     },
   });
 
@@ -112,6 +113,7 @@ export function Publicar() {
     }
     addActivity().catch((err) => {
       console.error('Error during mutation:', err);
+      setErrors({ form: 'Erro ao enviar os dados. Tente novamente mais tarde.' });
     });
     setFormState({
       time: '',
@@ -141,6 +143,7 @@ export function Publicar() {
         <h2>Publicar treino</h2>
         {loading && <Box display="flex" justifyContent="center"><CircularProgress /></Box>}
         {error && <Typography color="error">Erro ao enviar os dados: {error.message}</Typography>}
+        {errors.form && <Typography color="error">{errors.form}</Typography>}
         <TextField
           fullWidth
           label="URL da Imagem da Atividade"
