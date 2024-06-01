@@ -41,6 +41,22 @@ type FormState = {
   imageUrl: string;
 };
 
+type ActivityType = {
+  id: string;
+  time: string;
+  type: string;
+  distance: string;
+  calories: string;
+  bpm: string;
+  user: string;
+  userImage: string;
+  imageUrl: string;
+};
+
+type QueryResult = {
+  mockActivities: ActivityType[];
+};
+
 const validateForm = (state: FormState) => {
   const errors: { [key: string]: string } = {};
   if (!state.time) errors.time = "Horário é obrigatório";
@@ -70,7 +86,21 @@ export function Publicar() {
 
   const [addActivity, { loading, error }] = useMutation(ADD_ACTIVITY, {
     variables: formState,
-    refetchQueries: [{ query: GET_ACTIVITIES_BY_USER }],
+    update: (cache, { data: { addActivity } }) => {
+      const data = cache.readQuery<QueryResult>({ query: GET_ACTIVITIES_BY_USER, variables: { user: formState.user } });
+      if (data) {
+        cache.writeQuery({
+          query: GET_ACTIVITIES_BY_USER,
+          variables: { user: formState.user },
+          data: {
+            mockActivities: [...data.mockActivities, addActivity],
+          },
+        });
+      }
+    },
+    onError: (err) => {
+      console.error('Mutation error:', err);
+    },
   });
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -80,7 +110,9 @@ export function Publicar() {
       setErrors(validationErrors);
       return;
     }
-    addActivity();
+    addActivity().catch((err) => {
+      console.error('Error during mutation:', err);
+    });
     setFormState({
       time: '',
       type: '',
