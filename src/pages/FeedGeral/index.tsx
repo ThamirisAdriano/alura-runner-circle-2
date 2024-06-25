@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { useQuery, gql, useReactiveVar } from '@apollo/client';
+import { useQuery, useMutation, gql, useReactiveVar } from '@apollo/client';
 import { Box, CssBaseline, Grid, TextField, CircularProgress, Typography } from '@mui/material';
 import { FeedContainer } from './styles';
 import { Activity, ActivityCard } from '../../components/ActivityCard';
-import { searchQueryVar } from '../../apolloClient';
+import { GET_SEARCH_QUERY, SET_SEARCH_QUERY, searchQueryVar } from '../../apolloClient';
 
 export const GET_ACTIVITIES_BY_USER = gql`
   query GetActivitiesByUser($user: String) {
@@ -23,15 +23,20 @@ export const GET_ACTIVITIES_BY_USER = gql`
 `;
 
 export function FeedGeral() {
-  const user = useReactiveVar(searchQueryVar);
+  const { data: localData } = useQuery(GET_SEARCH_QUERY); 
+  const [setSearchQuery] = useMutation(SET_SEARCH_QUERY); 
+
+  const user = useReactiveVar(searchQueryVar); 
 
   const { data, loading, error } = useQuery(GET_ACTIVITIES_BY_USER, {
     variables: { user },
-    skip: !user, // Pula a consulta se o usuário não estiver definido
+    //skip: !user,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    searchQueryVar(e.target.value);
+    const query = e.target.value;
+    setSearchQuery({ variables: { query } }); // Atualizamos a variável reativa usando a mutation
+    searchQueryVar(query); // Atualizamos a variável reativa diretamente
   };
 
   return (
@@ -41,7 +46,7 @@ export function FeedGeral() {
         fullWidth
         placeholder="Digite o nome do usuário"
         variant="outlined"
-        value={user}
+        value={localData?.searchQuery || ''} 
         onChange={handleChange}
         style={{ marginBottom: '20px' }}
       />

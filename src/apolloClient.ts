@@ -1,5 +1,5 @@
 
-import { ApolloClient, InMemoryCache, HttpLink, makeVar } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink, gql, makeVar } from '@apollo/client';
 
 // Definindo variáveis reativas para estado local
 export const searchQueryVar = makeVar('');
@@ -30,6 +30,20 @@ const client = new ApolloClient({
   }),
   cache,
 });
+
+// Definindo a query local
+export const GET_SEARCH_QUERY = gql`
+  query GetSearchQuery {
+    searchQuery @client
+  }
+`;
+
+// Definindo a mutation local
+export const SET_SEARCH_QUERY = gql`
+  mutation SetSearchQuery($query: String!) {
+    setSearchQuery(query: $query) @client
+  }
+`;
 
 export default client;
 
