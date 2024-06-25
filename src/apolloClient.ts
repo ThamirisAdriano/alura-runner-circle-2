@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, HttpLink, gql, makeVar } from '@apollo/client';
-import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { setContext } from '@apollo/client/link/context';
+import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 
 export const searchQueryVar = makeVar('');
 
@@ -37,10 +37,15 @@ const httpLink = new HttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('token');
+  const csrfToken = document.cookie.split(';').find(item => item.trim().startsWith('XSRF-TOKEN='))?.split('=')[1] || '';
+  
+  console.log('CSRF Token:', csrfToken);
+
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : '',
+      'X-CSRF-Token': csrfToken,
     },
   };
 });
