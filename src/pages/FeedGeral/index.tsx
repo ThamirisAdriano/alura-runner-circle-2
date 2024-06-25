@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
+
+import React from 'react';
+import { useQuery, gql, useReactiveVar } from '@apollo/client';
 import { Box, CssBaseline, Grid, TextField, CircularProgress, Typography } from '@mui/material';
 import { FeedContainer } from './styles';
 import { Activity, ActivityCard } from '../../components/ActivityCard';
+import { searchQueryVar } from '../../apolloClient';
 
 export const GET_ACTIVITIES_BY_USER = gql`
   query GetActivitiesByUser($user: String) {
@@ -21,14 +23,15 @@ export const GET_ACTIVITIES_BY_USER = gql`
 `;
 
 export function FeedGeral() {
-  const [user, setUser] = useState('');
+  const user = useReactiveVar(searchQueryVar);
+
   const { data, loading, error } = useQuery(GET_ACTIVITIES_BY_USER, {
     variables: { user },
-    //skip: !user, // Pula a consulta se o usuário não estiver definido
+    skip: !user, // Pula a consulta se o usuário não estiver definido
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser(e.target.value);
+    searchQueryVar(e.target.value);
   };
 
   return (
@@ -71,3 +74,4 @@ export function FeedGeral() {
     </Box>
   );
 }
+

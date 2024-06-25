@@ -1,9 +1,18 @@
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+
+import { ApolloClient, InMemoryCache, HttpLink, makeVar } from '@apollo/client';
+
+// Definindo variáveis reativas para estado local
+export const searchQueryVar = makeVar('');
 
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
+        searchQuery: {
+          read() {
+            return searchQueryVar();
+          },
+        },
         mockActivities: {
           keyArgs: ["user"],
           merge(existing = [], incoming) {
@@ -23,3 +32,4 @@ const client = new ApolloClient({
 });
 
 export default client;
+
